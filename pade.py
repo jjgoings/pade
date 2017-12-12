@@ -21,7 +21,7 @@ def pade(time,signal,sigma=100.0,max_len=None,w_min=0.0,w_max=10.0,w_step=0.01):
           frequency: (NDArray) transformed signal frequencies
 
         From: Bruner, Adam, Daniel LaMaster, and Kenneth Lopata. "Accelerated 
-          broadband spectra using transition signal decomposition and Padé 
+          broadband spectra using transition signal decomposition and Pade 
           approximants." Journal of chemical theory and computation 12.8 
           (2016): 3741-3750. 
     """
@@ -49,16 +49,12 @@ def pade(time,signal,sigma=100.0,max_len=None,w_min=0.0,w_max=10.0,w_step=0.01):
 
     try:
         from scipy.linalg import toeplitz, solve_toeplitz
-    except ImportError:
-        print("You'll need SciPy version >= 0.17.0")
-
-    try:
         # Instead, form G = (c,r) as toeplitz
         #c = signal[N:2*N-1]
         #r = np.hstack((signal[1],signal[N-1:1:-1]))
         b = solve_toeplitz((signal[N:2*N-1],\
             np.hstack((signal[1],signal[N-1:1:-1]))),d,check_finite=False)
-    except np.linalg.linalg.LinAlgError:  
+    except (ImportError,np.linalg.linalg.LinAlgError) as e:  
         # OLD CODE: sometimes more stable
         # G[k,m] = signal[N - m + k] for m,k in range(1,N)
         G = signal[N + np.arange(1,N)[:,None] - np.arange(1,N)]
