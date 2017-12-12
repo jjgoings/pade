@@ -3,6 +3,8 @@ Here is a small Python implementation of the Fourier transform via Pade approxim
 >Bruner, Adam, Daniel LaMaster, and Kenneth Lopata. "Accelerated broadband spectra using transition dipole decomposition and Padé approximants." Journal of chemical theory and computation 12.8 (2016): 3741-3750.
 
 ## Dependencies
+Should work with either `python2.7` or `python3`.
+
 You'll need `numpy`, and ideally `scipy >= 0.17`
 
 ## Example
