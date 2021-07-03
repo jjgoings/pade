@@ -1,6 +1,6 @@
 import numpy as np
 
-def pade(time,signal,sigma=100.0,max_len=None,w_min=0.0,w_max=10.0,w_step=0.01):
+def pade(time,signal,sigma=100.0,max_len=None,w_min=0.0,w_max=10.0,w_step=0.01,read_freq=None):
     """ Routine to take the Fourier transform of a time signal using the method
           of Pade approximants.
 
@@ -65,11 +65,14 @@ def pade(time,signal,sigma=100.0,max_len=None,w_min=0.0,w_max=10.0,w_step=0.01):
 
     # b[m]*signal[k-m] for k in range(0,N), for m in range(k)
     a = np.dot(np.tril(toeplitz(signal[0:N])),b)
-    p = np.poly1d(a)
-    q = np.poly1d(b)
+    p = np.poly1d(np.flip(a))
+    q = np.poly1d(np.flip(b))
 
-    # choose frequencies to evaluate over 
-    frequency = np.arange(w_min,w_max,w_step)
+    if read_freq is None:
+        # choose frequencies to evaluate over 
+        frequency = np.arange(w_min,w_max,w_step)
+    else:
+        frequency = read_freq
 
     W = np.exp(-1j*frequency*stepsize)
 
