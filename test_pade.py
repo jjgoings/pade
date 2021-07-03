@@ -38,7 +38,7 @@ def test_pade():
 
     # FFT and Pade agree to within some tolerance
     assert np.allclose(freq_pade,freq_fft)
-    assert np.linalg.norm(fw_fft - fw_pade) < 1e-4  # "closeness" also depends on signal length, SIGMA, etc. 
+    assert np.linalg.norm(fw_fft - fw_pade) < 1e-1  # "closeness" also depends on signal length, SIGMA, etc. 
     #print(np.linalg.norm(fw_fft - fw))
 
 if __name__ == '__main__':
