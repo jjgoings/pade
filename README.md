@@ -38,7 +38,7 @@ which, when we plot the imaginary component, looks like this
 
 ![Transformed signal](fsignal.png)
 
-Which is what we expect, since our sinusoidal signal had frequencies at 2, 4 and 8.
+Which is what we expect, since our sinusoidal signal had frequencies at 2, 4 and 8. Note the agreement between FFT implementation from SciPy overlaid in the above figure.
 
 You can look at the arguments in `pade.py` for more options, most relating to what frequencies you ultimately want to evaluate the transformed signal over. (The Pade-approximant method actually yields a rational function, so it's up to the user to choose the domain.)
 
