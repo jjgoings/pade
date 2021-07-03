@@ -17,7 +17,10 @@ First, let's make a time series
 import numpy as np
 from pade import pade
 
-t = np.arange(0.0, 20.0, 0.01)
+w  = 2.0
+dt = 0.02
+N  = 5000
+t  = np.linspace(0,dt*N, N, endpoint=False)
 signal = np.sin(2*t) + np.sin(4*t) + np.sin(8*t)
 ```
 
