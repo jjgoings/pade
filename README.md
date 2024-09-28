@@ -1,3 +1,5 @@
+![Python package](https://github.com/jjgoings/pade/actions/workflows/pythonpackage.yml/badge.svg)
+
 Here is a small Python implementation of the Fourier transform via Pade approximants found in this paper
 
 >Bruner, Adam, Daniel LaMaster, and Kenneth Lopata. "Accelerated broadband spectra using transition dipole decomposition and Padé approximants." Journal of chemical theory and computation 12.8 (2016): 3741-3750.
