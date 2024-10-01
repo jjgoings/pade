@@ -27,8 +27,10 @@ with open('requirements.txt', 'r') as f:
 
 short_description = \
     """
-    A library for exact and approximate simulation of 
-    quantum algorithms for X-ray absorption.
+    An implementation of Pade transformation,
+    as originally explained in https://pubs.acs.org/doi/abs/10.1021/acs.jctc.6b00511,
+    see also
+    https://joshuagoings.com/assets/real-time-electronic-structure.pdf.
     """
 
 setup(
