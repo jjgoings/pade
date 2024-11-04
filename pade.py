@@ -1,38 +1,51 @@
 import numpy as np
 
-def pade(time,signal,sigma=100.0,max_len=None,w_min=0.0,w_max=10.0,w_step=0.01,read_freq=None):
-    """ Routine to take the Fourier transform of a time signal using the method
-          of Pade approximants.
 
-        Inputs:
-          time:      (list or Numpy NDArray) signal sampling times
-          signal:    (list or Numpy NDArray) 
+def pade(time, signal, sigma=100.0, max_len=None, w_min=0.0, w_max=10.0, w_step=0.01, read_freq=None, baseline="first"):
+    """Routine to take the Fourier transform of a time signal using the method
+      of Pade approximants.
 
-        Optional Inputs:
-          sigma:     (float) signal damp factor, yields peaks with 
-                       FWHM of 2/sigma 
-          max_len:   (int) maximum number of points to use in Fourier transform
-          w_min:     (float) lower returned frequency bound
-          w_max:     (float) upper returned frequency bound
-          w_step:    (float) returned frequency bin width
+    Inputs:
+      time:      (list or Numpy NDArray) signal sampling times
+      signal:    (list or Numpy NDArray)
 
-        Returns:
-          fsignal:   (complex NDArray) transformed signal
-          frequency: (NDArray) transformed signal frequencies
+    Optional Inputs:
+      sigma:     (float) signal damp factor, yields peaks with
+                   FWHM of 2/sigma
+      max_len:   (int) maximum number of points to use in Fourier transform
+      w_min:     (float) lower returned frequency bound
+      w_max:     (float) upper returned frequency bound
+      w_step:    (float) returned frequency bin width
+      baseline:  (str) method for baseline correction:
+                  'mean': subtract mean of signal
+                  'first': subtract first point
+                  'none': no baseline correction
 
-        From: Bruner, Adam, Daniel LaMaster, and Kenneth Lopata. "Accelerated 
-          broadband spectra using transition signal decomposition and Pade 
-          approximants." Journal of chemical theory and computation 12.8 
-          (2016): 3741-3750. 
+    Returns:
+      fsignal:   (complex NDArray) transformed signal
+      frequency: (NDArray) transformed signal frequencies
+
+    From: Bruner, Adam, Daniel LaMaster, and Kenneth Lopata. "Accelerated
+      broadband spectra using transition signal decomposition and Pade
+      approximants." Journal of chemical theory and computation 12.8
+      (2016): 3741-3750.
     """
+    signal = np.asarray(signal)
 
-    # center signal about zero
-    signal = np.asarray(signal) - np.mean(signal)
-      
+    # Apply baseline correction based on specified method
+    if baseline.lower() == "mean":
+        signal = signal - np.mean(signal)
+    elif baseline.lower() == "first":
+        signal = signal - signal[0]
+    elif baseline.lower() == "none":
+        pass
+    else:
+        raise ValueError("baseline must be 'mean', 'first', or 'none'")
+
     stepsize = time[1] - time[0]
 
-    # Damp the signal with an exponential decay. 
-    damp = np.exp(-(stepsize*np.arange(len(signal)))/float(sigma))
+    # Damp the signal with an exponential decay.
+    damp = np.exp(-(stepsize * np.arange(len(signal))) / float(sigma))
     signal *= damp
 
     M = len(signal)
@@ -45,41 +58,49 @@ def pade(time,signal,sigma=100.0,max_len=None,w_min=0.0,w_max=10.0,w_step=0.01,r
 
     # G and d are (N-1) x (N-1)
     # d[k] = -signal[N+k] for k in range(1,N)
-    d = -signal[N+1:2*N]
+    d = -signal[N + 1 : 2 * N]
 
     try:
         from scipy.linalg import toeplitz, solve_toeplitz
+
         # Instead, form G = (c,r) as toeplitz
-        #c = signal[N:2*N-1]
-        #r = np.hstack((signal[1],signal[N-1:1:-1]))
-        b = solve_toeplitz((signal[N:2*N-1],\
-            np.hstack((signal[1],signal[N-1:1:-1]))),d,check_finite=False)
-    except (ImportError,np.linalg.linalg.LinAlgError) as e:  
+        b = solve_toeplitz(
+            (signal[N : 2 * N - 1], np.hstack((signal[1], signal[N - 1 : 1 : -1]))), d, check_finite=False
+        )
+    except (ImportError, np.linalg.linalg.LinAlgError) as e:
         # OLD CODE: sometimes more stable
         # G[k,m] = signal[N - m + k] for m,k in range(1,N)
-        G = signal[N + np.arange(1,N)[:,None] - np.arange(1,N)]
-        b = np.linalg.solve(G,d)
+        G = signal[N + np.arange(1, N)[:, None] - np.arange(1, N)]
+        b = np.linalg.solve(G, d)
 
     # Now make b Nx1 where b0 = 1
-    b = np.hstack((1,b))
+    b = np.hstack((1, b))
 
     # b[m]*signal[k-m] for k in range(0,N), for m in range(k)
-    a = np.dot(np.tril(toeplitz(signal[0:N])),b)
+    a = np.dot(np.tril(toeplitz(signal[0:N])), b)
     p = np.poly1d(np.flip(a))
     q = np.poly1d(np.flip(b))
 
     if read_freq is None:
-        # choose frequencies to evaluate over 
-        frequency = np.arange(w_min,w_max,w_step)
+        # choose frequencies to evaluate over
+        frequency = np.arange(w_min, w_max, w_step)
     else:
         frequency = read_freq
 
-    W = np.exp(-1j*frequency*stepsize)
+    W = np.exp(-1j * frequency * stepsize)
 
-    fsignal = p(W)/q(W)
+    fsignal = p(W) / q(W)
 
-    return fsignal, frequency 
+    return fsignal, frequency
 
 
-            
+# Example usage:
+if __name__ == "__main__":
+    # Generate a sample signal
+    t = np.linspace(0, 10, 1000)
+    s = np.sin(2 * np.pi * t) + 2  # Signal with offset
 
+    # Compare different baseline methods
+    fsig_mean, freq_mean = pade(t, s, baseline="mean")
+    fsig_first, freq_first = pade(t, s, baseline="first")
+    fsig_none, freq_none = pade(t, s, baseline="none")

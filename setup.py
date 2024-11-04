@@ -22,11 +22,10 @@
 from setuptools import setup, find_packages
 
 # Parse requirements from file
-with open('requirements.txt', 'r') as f:
+with open("requirements.txt", "r") as f:
     requirements = f.read().splitlines()
 
-short_description = \
-    """
+short_description = """
     An implementation of Pade transformation,
     as originally explained in https://pubs.acs.org/doi/abs/10.1021/acs.jctc.6b00511,
     see also
@@ -34,24 +33,21 @@ short_description = \
     """
 
 setup(
-    name='pade',
-    version='0.0.1',
-    author='Joshua Goings',
+    name="pade",
+    version="0.0.1",
+    author="Joshua Goings",
     description=short_description,
-    long_description=open('README.md').read(),
-    long_description_content_type='text/markdown',
-    url='https://github.com/jjgoings/pade',
+    long_description=open("README.md").read(),
+    long_description_content_type="text/markdown",
+    url="https://github.com/jjgoings/pade",
     packages=find_packages(),
     install_requires=requirements,
     extras_require={
-        "examples": [
-            "matplotlib>=3.7.2", "jupyter"
-        ],
-    },  
+        "examples": ["matplotlib>=3.7.2", "jupyter"],
+    },
     classifiers=[
         "Intended Audience :: Developers",
-        "Intended Audience :: Science/Research"
-        "License :: OSI Approved ::  MIT",
+        "Intended Audience :: Science/Research" "License :: OSI Approved ::  MIT",
         "Programming Language :: Python :: 3.9",
         "Programming Language :: Python :: 3.10",
     ],
