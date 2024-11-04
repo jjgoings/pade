@@ -27,7 +27,7 @@ def pade(time,signal,sigma=100.0,max_len=None,w_min=0.0,w_max=10.0,w_step=0.01,r
     """
 
     # center signal about zero
-    signal = np.asarray(signal) - signal[0]
+    signal = np.asarray(signal) - np.mean(signal)
       
     stepsize = time[1] - time[0]
 
